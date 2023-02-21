@@ -2,6 +2,8 @@ package com.example.tipcalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
     TextView totalTip;
     TextView totalSplit;
     Button button;
+    Button buttonSettings;
+
+    private boolean default_decision;
+    private int default_percentage;
+    private int default_people;
+
 
 
     @Override
@@ -44,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         totalTip = findViewById(R.id.totalTip);
         totalSplit = findViewById(R.id.totalSplit);
         button = findViewById(R.id.button);
-
+        buttonSettings = findViewById(R.id.buttonSettings);
 
         tipBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -65,9 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-
-
-
         });
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -76,15 +81,11 @@ public class MainActivity extends AppCompatActivity {
 
                 double price = Double.parseDouble(enterPrice.getText().toString());
                 double tip = Double.parseDouble(seekBarLabel.getText().toString());
-                //double people = Double.parseDouble(numPeople.getText().toString());
 
                 if(payEntireButton.isChecked()) {
 
                     tip = (price * (tip/100));
-                    //price = price + (price * (tip/100));
                     price = price + tip;
-
-
 
                 }else if (splitCostButton.isChecked()) {
 
@@ -92,17 +93,54 @@ public class MainActivity extends AppCompatActivity {
                     price = price + (price * (tip/100));
                     totalSplit.setText(String.format("%.2f" , (price / people)));
 
-
                 }
 
                 totalPrice.setText(String.format("%.2f" , price));
                 totalTip.setText(String.format("%.2f" , tip));
-                //totalSplit.setText(String.format("%.2f" , (price / people)));
 
             }
         });
 
+        buttonSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(i);
+
+            }
+        });
+    }
+
+    private void update() {
+
+        SharedPreferences sp = getSharedPreferences("shared", MODE_PRIVATE);
+        default_decision = sp.getBoolean("default decision", false);
+        default_percentage = sp.getInt("default percentage", 0);
+        default_people = sp.getInt("default people", 0);
+
+        if(default_decision == true) {
+
+            splitCostButton.setChecked(true);
+
+        }else {
+
+            payEntireButton.setChecked(true);
+        }
+
+        tipBar.setProgress(default_percentage);
+
+        seekBarLabel.setText(default_percentage + "");
+
+        numPeople.setText(default_people + "");
 
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        update();
+
+    }
+
 }
