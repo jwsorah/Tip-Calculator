@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private int default_percentage;
     private int default_people;
 
+    private double FinalTip;
+
 
 
     @Override
@@ -82,21 +84,24 @@ public class MainActivity extends AppCompatActivity {
                 double price = Double.parseDouble(enterPrice.getText().toString());
                 double tip = Double.parseDouble(seekBarLabel.getText().toString());
 
+
                 if(payEntireButton.isChecked()) {
 
-                    tip = (price * (tip/100));
-                    price = price + tip;
+                    FinalTip = (price * (tip/100));
+                    price = price + FinalTip;
 
                 }else if (splitCostButton.isChecked()) {
 
                     double people = Double.parseDouble(numPeople.getText().toString());
-                    price = price + (price * (tip/100));
+                    FinalTip = (price * (tip/100));
+                    price = price + FinalTip;
                     totalSplit.setText(String.format("%.2f" , (price / people)));
+
 
                 }
 
                 totalPrice.setText(String.format("%.2f" , price));
-                totalTip.setText(String.format("%.2f" , tip));
+                totalTip.setText(String.format("%.2f" , FinalTip));
 
             }
         });
